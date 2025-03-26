@@ -35,6 +35,7 @@ jobs:
           node dist/index.js > full.log 2>&1
 
       - name: Upload full log artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: full-log
