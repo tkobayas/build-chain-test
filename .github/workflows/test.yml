@@ -1,0 +1,33 @@
+name: Test
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  test-build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        java-version: [17]
+        maven-version: ['3.9.6']
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.os }} / Java-${{ matrix.java-version }} / Maven-${{ matrix.maven-version }}
+    steps:
+      - name: Java and Maven Setup
+        uses: apache/incubator-kie-kogito-pipelines/.ci/actions/maven@main
+        with:
+          java-version: ${{ matrix.java-version }}
+          maven-version: ${{ matrix.maven-version }}
+          cache-key-prefix: ${{ runner.os }}-${{ matrix.java-version }}-maven${{ matrix.maven-version }}
+      - name: Build Chain
+        uses: apache/incubator-kie-kogito-pipelines/.ci/actions/build-chain@main
+        env:
+          BUILD_MVN_OPTS_CURRENT: '-Dfull -Dreproducible'
+          MAVEN_OPTS: "-Dfile.encoding=UTF-8"
+        with:
+          definition-file: https://raw.githubusercontent.com/${GROUP:apache}/incubator-kie-kogito-pipelines/${BRANCH:main}/.ci/pull-request-config.yaml
+          annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
