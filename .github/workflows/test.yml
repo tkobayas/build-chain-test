@@ -32,6 +32,14 @@ jobs:
       - name: Run action manually with logging
         run: |
           cd github-action-build-chain
+          INPUT_DEFINITION_FILE="https://raw.githubusercontent.com/apache/incubator-kie-kogito-pipelines/main/.ci/pull-request-config.yaml" \
+          INPUT_FLOW_TYPE="cross_pr" \
+          INPUT_STARTING_PROJECT="incubator-kie-drools" \
+          INPUT_SKIP_EXECUTION="false" \
+          INPUT_SKIP_CHECKOUT="false" \
+          INPUT_SKIP_PARALLEL_CHECKOUT="false" \
+          INPUT_ENABLE_PARALLEL_EXECUTION="false" \
+          INPUT_LOGGER_LEVEL="debug" \
           node dist/index.js > full.log 2>&1
 
       - name: Upload full log artifact
