@@ -22,12 +22,14 @@ jobs:
           maven-version: ${{ matrix.maven-version }}
           cache-key-prefix: ${{ runner.os }}-${{ matrix.java-version }}-maven${{ matrix.maven-version }}
       - name: Build Chain
-        uses: apache/incubator-kie-kogito-pipelines/.ci/actions/build-chain@main
+        uses: kiegroup/github-action-build-chain@v3
         env:
           BUILD_MVN_OPTS_CURRENT: '-Dfull -Dreproducible'
           MAVEN_OPTS: "-Dfile.encoding=UTF-8"
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
           definition-file: https://raw.githubusercontent.com/${GROUP:apache}/incubator-kie-kogito-pipelines/${BRANCH:main}/.ci/pull-request-config.yaml
           annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           logger-level: "debug"
+          flow-type: "cross_pr"
