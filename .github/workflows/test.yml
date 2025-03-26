@@ -34,7 +34,7 @@ jobs:
           node dist/index.js 2>&1 | tee full.log
 
       - name: Upload full log artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: full-log
           path: github-action-build-chain/full.log
