@@ -27,6 +27,7 @@ jobs:
         with:
           repository: tkobayas/github-action-build-chain
           ref: debug
+          path: github-action-build-chain
 
       - name: Run action manually with logging
         run: |
