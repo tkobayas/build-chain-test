@@ -21,14 +21,32 @@ jobs:
           java-version: ${{ matrix.java-version }}
           maven-version: ${{ matrix.maven-version }}
           cache-key-prefix: ${{ runner.os }}-${{ matrix.java-version }}-maven${{ matrix.maven-version }}
-      - name: Build Chain
-        uses: tkobayas/github-action-build-chain@debug
-        env:
-          BUILD_MVN_OPTS_CURRENT: '-Dfull -Dreproducible'
-          MAVEN_OPTS: "-Dfile.encoding=UTF-8"
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Checkout action repository
+        uses: actions/checkout@v3
         with:
-          definition-file: https://raw.githubusercontent.com/${GROUP:apache}/incubator-kie-kogito-pipelines/${BRANCH:main}/.ci/pull-request-config.yaml
-          annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
-          logger-level: "debug"
-          flow-type: "cross_pr"
+          repository: tkobayas/github-action-build-chain
+          ref: debug
+
+      - name: Run action manually with logging
+        run: |
+          cd github-action-build-chain
+          node dist/index.js 2>&1 | tee full.log
+
+      - name: Upload full log artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: full-log
+          path: github-action-build-chain/full.log
+
+#      - name: Build Chain
+#        uses: tkobayas/github-action-build-chain@debug
+#        env:
+#          BUILD_MVN_OPTS_CURRENT: '-Dfull -Dreproducible'
+#          MAVEN_OPTS: "-Dfile.encoding=UTF-8"
+#          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+#        with:
+#          definition-file: https://raw.githubusercontent.com/${GROUP:apache}/incubator-kie-kogito-pipelines/${BRANCH:main}/.ci/pull-request-config.yaml
+#          annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
+#          logger-level: "debug"
+#          flow-type: "cross_pr"
