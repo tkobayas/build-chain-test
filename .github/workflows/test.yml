@@ -32,7 +32,7 @@ jobs:
       - name: Run action manually with logging
         run: |
           cd github-action-build-chain
-          node dist/index.js 2>&1 | tee full.log
+          node dist/index.js > full.log 2>&1
 
       - name: Upload full log artifact
         uses: actions/upload-artifact@v4
