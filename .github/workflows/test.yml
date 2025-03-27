@@ -22,32 +22,32 @@ jobs:
           maven-version: ${{ matrix.maven-version }}
           cache-key-prefix: ${{ runner.os }}-${{ matrix.java-version }}-maven${{ matrix.maven-version }}
 
-      - name: Checkout action repository
-        uses: actions/checkout@v3
-        with:
-          repository: tkobayas/github-action-build-chain
-          ref: debug
-          path: github-action-build-chain
-
-      - name: Run action manually with logging
-        run: |
-          cd github-action-build-chain
-          INPUT_DEFINITION_FILE="https://raw.githubusercontent.com/apache/incubator-kie-kogito-pipelines/main/.ci/pull-request-config.yaml" \
-          INPUT_FLOW_TYPE="cross_pr" \
-          INPUT_STARTING_PROJECT="incubator-kie-drools" \
-          INPUT_SKIP_EXECUTION="false" \
-          INPUT_SKIP_CHECKOUT="false" \
-          INPUT_SKIP_PARALLEL_CHECKOUT="false" \
-          INPUT_ENABLE_PARALLEL_EXECUTION="false" \
-          INPUT_LOGGER_LEVEL="debug" \
-          node dist/index.js > full.log 2>&1
-
-      - name: Upload full log artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: full-log
-          path: github-action-build-chain/full.log
+#      - name: Checkout action repository
+#        uses: actions/checkout@v3
+#        with:
+#          repository: tkobayas/github-action-build-chain
+#          ref: debug
+#          path: github-action-build-chain
+#
+#      - name: Run action manually with logging
+#        run: |
+#          cd github-action-build-chain
+#          INPUT_DEFINITION_FILE="https://raw.githubusercontent.com/apache/incubator-kie-kogito-pipelines/main/.ci/pull-request-config.yaml" \
+#          INPUT_FLOW_TYPE="cross_pr" \
+#          INPUT_STARTING_PROJECT="incubator-kie-drools" \
+#          INPUT_SKIP_EXECUTION="false" \
+#          INPUT_SKIP_CHECKOUT="false" \
+#          INPUT_SKIP_PARALLEL_CHECKOUT="false" \
+#          INPUT_ENABLE_PARALLEL_EXECUTION="false" \
+#          INPUT_LOGGER_LEVEL="debug" \
+#          node dist/index.js > full.log 2>&1
+#
+#      - name: Upload full log artifact
+#        if: always()
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: full-log
+#          path: github-action-build-chain/full.log
 
 #      - name: Build Chain
 #        uses: tkobayas/github-action-build-chain@debug
@@ -60,3 +60,13 @@ jobs:
 #          annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
 #          logger-level: "debug"
 #          flow-type: "cross_pr"
+
+      - name: Build Chain
+        uses: apache/incubator-kie-kogito-pipelines/.ci/actions/build-chain@main
+        env:
+          BUILD_MVN_OPTS_CURRENT: '-Dfull -Dreproducible'
+          MAVEN_OPTS: "-Dfile.encoding=UTF-8"
+        with:
+          definition-file: https://raw.githubusercontent.com/${GROUP:apache}/incubator-kie-kogito-pipelines/${BRANCH:main}/.ci/pull-request-config.yaml
+          annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
